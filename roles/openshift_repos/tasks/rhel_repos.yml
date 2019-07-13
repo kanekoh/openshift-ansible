@@ -18,15 +18,20 @@
   changed_when: "'4' not in repo_rhel.stdout"
   failed_when: repo_rhel.rc == 11
 
-- name: Disable all repositories
-  command: bash -c "subscription-manager repos --disable='*'"
-  when: repo_rhel.changed
+- name: Copy repos file to remote
+  copy:
+    src: "{{ rhsub_repos }}"
+    dest: "/etc/yum.repos.d/ose.repo"
 
-- name: Enable RHEL repositories
-  command: subscription-manager repos \
-               --enable="rhel-7-server-rpms" \
-               --enable="rhel-7-server-extras-rpms" \
-               --enable="rhel-7-server-ose-{{ ( openshift_release ).split('.')[0:2] | join('.') }}-rpms"
-  register: subscribe_repos
-  until: subscribe_repos is succeeded
-  when: repo_rhel.changed
+# - name: Disable all repositories
+#   command: bash -c "subscription-manager repos --disable='*'"
+#   when: repo_rhel.changed
+
+# - name: Enable RHEL repositories
+#   command: subscription-manager repos \
+#                --enable="rhel-7-server-rpms" \
+#                --enable="rhel-7-server-extras-rpms" \
+#                --enable="rhel-7-server-ose-{{ ( openshift_release ).split('.')[0:2] | join('.') }}-rpms"
+#   register: subscribe_repos
+#   until: subscribe_repos is succeeded
+#   when: repo_rhel.changed
